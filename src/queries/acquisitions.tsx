@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
 import { fetcher } from '../utils/fetcher'
 
-export interface IAcquisition {
+export interface Acquisition {
   company_permalink: string;
   company_name: string;
   company_category_code: string;

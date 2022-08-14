@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
 import { fetcher } from '../utils/fetcher'
 
-export interface ICompany {
+export interface Company {
   category_code?: string;
   city?: string;
   country_code?: string;

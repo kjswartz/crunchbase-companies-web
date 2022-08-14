@@ -37,10 +37,10 @@ const App: FC = () => {
         <Header />
         <Body>
           <HeaderRow>
-            <Button onClick={() => setDisplay('acquisitions')}>Acquisitions</Button>
-            <Button onClick={() => setDisplay('companies')}>Companies</Button>
-            <Button onClick={() => setDisplay('investments')}>Investments</Button>
-            <Button onClick={() => setDisplay('rounds')}>Rounds</Button>
+            <Button isActive={display === 'acquisitions'} onClick={() => setDisplay('acquisitions')}>Acquisitions</Button>
+            <Button isActive={display === 'companies'} onClick={() => setDisplay('companies')}>Companies</Button>
+            <Button isActive={display === 'investments'} onClick={() => setDisplay('investments')}>Investments</Button>
+            <Button isActive={display === 'rounds'} onClick={() => setDisplay('rounds')}>Rounds</Button>
           </HeaderRow>
           <BodyRow>{bodyDisplay}</BodyRow>
         </Body>
@@ -57,7 +57,6 @@ const Container = styled.div`
 `;
 
 const Body = styled.div`
-  border: 1px solid blue;
   width: 100%;
   height: 100%;
   display: flex;
@@ -66,9 +65,10 @@ const Body = styled.div`
   align-items: center;
 `;
 
-const Button = styled.div`
+const Button = styled.div<{ isActive: boolean }>`
   height: 20px;
   width: 200px;
+  height: 100%;
   display: flex;
   justify-content: center;
   border: 1px solid red;
@@ -76,18 +76,17 @@ const Button = styled.div`
   &:hover {
     background-color: pink;
   }
+  background-color: ${({ isActive }) => (isActive ? 'pink' : '#fff')};
 `
 
 const HeaderRow = styled.div`
   display: flex;
-  border: 1px solid green;
   padding: 10px 0;
   margin: 10px 0;
 `;
 
 const BodyRow = styled.div`
   display: flex;
-  border: 1px solid green;
   padding: 10px 0;
   margin: 10px 0;
   width: 100%;

@@ -1,73 +1,58 @@
-// import React, { FC, useState } from 'react'
-// import styled from 'styled-components'
-// import { map, isEmpty } from 'lodash/fp'
+import React, { FC, useState } from 'react'
+import styled from 'styled-components'
+import { isEmpty } from 'lodash/fp'
 
-// import Round from './round'
-// import Loader from './loader'
-// import Error from './error'
-// import NoResults from './noResults'
-// import { useCrunchbaseRoundsQuery, CrunchbaseRound } from '../graphql/schema'
-// import { useThrottle } from '../utils/useThrottle'
+import Loader from './loader'
+import Error from './error'
+import NoResults from './noResults'
+import { useRoundsQuery, Round } from '../queries/rounds'
+import { DataTable } from './data-table'
+import { Pagination } from './data-table/pagination'
 
-// const Rounds: FC = () => {
-//   const [value, setValue] = useState('')
-//   const [search, setSearch] = useState<string | null>(null)
-//   const throttledQuery = useThrottle(2000)
+const COLUMNS = [
+  {
+    id: 'name',
+    displayName: 'Company Name',
+    renderCell: (item: Round) => <div>{item.company_name}</div>,
+  },
+  {
+    id: 'company_category_code',
+    displayName: 'Company  Category',
+    renderCell: (item: Round) => <div>{item.company_category_code}</div>,
+  },
+  {
+    id: 'raised_amount_usd',
+    displayName: 'Raised Amount',
+    renderCell: (item: Round) => <div>{item.raised_amount_usd ? `$${item.raised_amount_usd}` : '-'}</div>,
+  }
+]
 
-//   const { data, loading, error } = useCrunchbaseRoundsQuery({
-//     variables: { search }
-//   })
-
-//   const updateQuery = (newValue: string) => setSearch(newValue)
-
-//   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setValue(e.target.value)
-//     throttledQuery(updateQuery, e.target.value)
-//   };
-//   const { crunchbaseRounds } = data || {};
-//   return (
-//     <Container>
-//       <SearchFilter 
-//         value={value}
-//         onChange={onChange}
-//         placeholder={'Search Round'}
-//       />
-//       {loading 
-//         ? <Loader />
-//         : error 
-//           ? <Error />
-//           : isEmpty(crunchbaseRounds) 
-//             ? <NoResults /> 
-//             : map((round: CrunchbaseRound) => (
-//                 <ItemContainer key={round.id}>
-//                   <Round round={round}/>
-//                 </ItemContainer>
-//               ), crunchbaseRounds)
-//       }
-//     </Container>
-//   )
-// }
-const Rounds = () => {
+const Rounds: FC = () => {
+  const [page, setPage] = useState<number>(1)
+  const { data, isLoading, error } = useRoundsQuery(page)
+  
+  const { rounds, count } = data || {};
   return (
-    <div>rs</div>
+    <Container>
+      {isLoading 
+        ? <Loader /> 
+        : error 
+          ? <Error />
+          : isEmpty(rounds) 
+            ? <NoResults /> 
+            : (
+              <>
+                <DataTable columns={COLUMNS}  data={rounds} rowKey={'id'}/>
+                <Pagination totalItems={count} page={page} onChange={(({ page }) => setPage(page))}/>
+              </>
+            )
+      }
+    </Container>
   )
 }
+
 export default Rounds;
 
-// const Container = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-// `;
-
-// const SearchFilter = styled.input`
-//   width: 320px;
-//   height: 20px;
-//   font-size: 12px;
-//   margin-bottom: 10px;
-// `;
-
-// const ItemContainer = styled.div`
-//   border: 1px solid black;
-//   margin: 10px 0;
-// `;
+const Container = styled.div`
+  width: 100%;
+`;

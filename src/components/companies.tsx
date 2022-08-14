@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash/fp'
 import Loader from './loader'
 import Error from './error'
 import NoResults from './noResults'
-import { useCompaniesQuery, ICompany } from '../queries/companies'
+import { useCompaniesQuery, Company } from '../queries/companies'
 import { DataTable } from './data-table'
 import { Pagination } from './data-table/pagination'
 
@@ -13,22 +13,22 @@ const COLUMNS = [
   {
     id: 'name',
     displayName: 'Name',
-    renderCell: (item: ICompany) => <div>{item.name}</div>,
+    renderCell: (item: Company) => <div>{item.name}</div>,
   },
   {
     id: 'category',
     displayName: 'Category',
-    renderCell: (item: ICompany) => <div>{item.category_code}</div>,
+    renderCell: (item: Company) => <div>{item.category_code}</div>,
   },
   {
     id: 'funding_rounds',
     displayName: 'Funding Rounds',
-    renderCell: (item: ICompany) => <div>{item.funding_rounds}</div>,
+    renderCell: (item: Company) => <div>{item.funding_rounds}</div>,
   },
   {
     id: 'funding_total_usd',
     displayName: 'Funding Total',
-    renderCell: (item: ICompany) => <div>{item.funding_total_usd ? `$${item.funding_total_usd}` : '-'}</div>,
+    renderCell: (item: Company) => <div>{item.funding_total_usd ? `$${item.funding_total_usd}` : '-'}</div>,
   },
 ]
 
