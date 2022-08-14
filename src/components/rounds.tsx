@@ -21,6 +21,11 @@ const COLUMNS = [
     renderCell: (item: Round) => <div>{item.company_category_code}</div>,
   },
   {
+    id: 'funding_round_type',
+    displayName: 'Type',
+    renderCell: (item: Round) => <div>{item.funding_round_type}</div>,
+  },
+  {
     id: 'raised_amount_usd',
     displayName: 'Raised Amount',
     renderCell: (item: Round) => <div>{item.raised_amount_usd ? `$${item.raised_amount_usd}` : '-'}</div>,
