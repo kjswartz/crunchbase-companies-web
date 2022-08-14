@@ -1,14 +1,16 @@
 import { FC, useState, useMemo } from 'react'
-import { ApolloProvider } from '@apollo/client'
-import styled from 'styled-components'
+import { QueryClient, QueryClientProvider } from "react-query";
 
-import { client } from './apolloClient'
+import styled from 'styled-components'
 
 import Header from './components/header'
 import Companies from './components/companies'
 import Acquisitions from './components/acquisitions'
 import Investments from './components/investments'
 import Rounds from './components/rounds'
+
+const queryClient = new QueryClient({});
+
 
 const App: FC = () => {
   const [display, setDisplay] = useState<string | null>();
@@ -30,20 +32,20 @@ const App: FC = () => {
 
 
  return (
-  <ApolloProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       <Container>
         <Header />
         <Body>
-          <Row>
+          <HeaderRow>
             <Button onClick={() => setDisplay('acquisitions')}>Acquisitions</Button>
             <Button onClick={() => setDisplay('companies')}>Companies</Button>
             <Button onClick={() => setDisplay('investments')}>Investments</Button>
             <Button onClick={() => setDisplay('rounds')}>Rounds</Button>
-          </Row>
-          <Row>{bodyDisplay}</Row>
+          </HeaderRow>
+          <BodyRow>{bodyDisplay}</BodyRow>
         </Body>
       </Container>
-    </ApolloProvider>
+    </QueryClientProvider>
   )
 }
 export default App;
@@ -76,9 +78,17 @@ const Button = styled.div`
   }
 `
 
-const Row = styled.div`
+const HeaderRow = styled.div`
   display: flex;
   border: 1px solid green;
   padding: 10px 0;
   margin: 10px 0;
+`;
+
+const BodyRow = styled.div`
+  display: flex;
+  border: 1px solid green;
+  padding: 10px 0;
+  margin: 10px 0;
+  width: 100%;
 `;

@@ -1,66 +1,39 @@
-import React from 'react';
-import { useQuery, gql, QueryHookOptions, QueryResult } from '@apollo/client';
+import { useQuery } from 'react-query'
+import { fetcher } from '../utils/fetcher'
 
-export interface Company {
-  __typename?: 'CrunchbaseCompany';
-  categoryCode?: string;
+export interface ICompany {
+  category_code?: string;
   city?: string;
-  countryCode?: string;
-  createdAt: string;
-  firstFundingAt?: string;
-  foundedAt?: string;
-  foundedMonth?: string;
-  foundedQuarter?: string;
-  foundedYear?: string;
-  fundingRounds?: string;
-  fundingTotalUsd?: number;
+  country_code?: string;
+  created_at: string;
+  first_funding_at?: string;
+  founded_at?: string;
+  founded_month?: string;
+  founded_quarter?: string;
+  founded_year?: string;
+  funding_rounds?: string;
+  funding_total_usd?: number;
   id: string;
-  lastFundingAt?: string;
-  lastMilestoneAt?: string;
+  last_funding_at?: string;
+  last_milestone_at?: string;
   name?: string;
   permalink?: string;
   region?: string;
-  stateCode?: string;
+  state_code?: string;
   status?: string;
-  updatedAt: string;
+  updated_at: string;
 }
 
-export type QueryCompaniesArgs = {
-  search?: string;
-  page?: number;
-  per_page?: number;
-};
-
-
-export const GET_COMPANIES = gql`
-  query Companies($search: String, $page: Number, $per_page: Number) {
-    companies(search: $search, page: $page, per_page: $per_page) {
-      id
-      name
-      status
-      categoryCode
-      fundingTotalUsd
-      status
-      countryCode
-      stateCode
-      region
-      city
-      fundingRounds
-      foundedAt
-      foundedMonth
-      foundedQuarter
-      foundedYear
-      firstFundingAt
-      lastFundingAt
-      lastMilestoneAt
+export const useCompaniesQuery = (page: number = 1) => {
+  return useQuery(
+    `company-${page}`,
+    async () => {
+      const response = await fetcher('crunchbase_companies', page);
+      const { crunchbase_companies, count } = await response.json();
+      return {
+        companies: crunchbase_companies,
+        count
+      }
     }
-  }
-`;
-export type CompaniesQuery = { __typename?: 'Query', companies: Array<Company> };
-
-export function useCompaniesQuery(baseOptions?: QueryHookOptions<CompaniesQuery, QueryCompaniesArgs>) {
-  return useQuery<CompaniesQuery, QueryCompaniesArgs>(GET_COMPANIES, baseOptions);
+  )
 }
-
-export type CompaniesQueryHookResult = ReturnType<typeof useCompaniesQuery>;
-export type CompaniesQueryResult = QueryResult<CompaniesQuery, QueryCompaniesArgs>;

@@ -1,69 +1,58 @@
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
-import { map, isEmpty } from 'lodash/fp'
+import { isEmpty } from 'lodash/fp'
 
-import Acquisition from './acquisition'
 import Loader from './loader'
 import Error from './error'
 import NoResults from './noResults'
-import { useCrunchbaseAcquisitionsQuery, CrunchbaseAcquisition } from '../graphql/schema'
-import { useThrottle } from '../utils/useThrottle'
+import { useAcquisitionsQuery, IAcquisition } from '../queries/acquisitions'
+import { DataTable } from './data-table'
+import { Pagination } from './data-table/pagination'
 
-const Acquisitions: FC = () => {
-  const [value, setValue] = useState('')
-  const [search, setSearch] = useState<string | null>(null)
-  const throttledQuery = useThrottle(2000)
+const COLUMNS = [
+  {
+    id: 'name',
+    displayName: 'Company Name',
+    renderCell: (item: IAcquisition) => <div>{item.company_name}</div>,
+  },
+  {
+    id: 'company_category_code',
+    displayName: 'Company  Category',
+    renderCell: (item: IAcquisition) => <div>{item.company_category_code}</div>,
+  },
+  {
+    id: 'price_amount',
+    displayName: 'Price',
+    renderCell: (item: IAcquisition) => <div>{item.price_amount ? `$${item.price_amount}` : '-'}</div>,
+  }
+]
 
-  const { data, loading, error } = useCrunchbaseAcquisitionsQuery({
-    variables: { search }
-  })
-  console.log('data', data)
-  const updateQuery = (newValue: string) => setSearch(newValue)
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value)
-    throttledQuery(updateQuery, e.target.value)
-  };
-  const { crunchbaseAcquisitions } = data || {};
+const Companies: FC = () => {
+  const [page, setPage] = useState<number>(1)
+  const { data, isLoading, error } = useAcquisitionsQuery(page)
+  
+  const { acquisitions, count } = data || {};
   return (
     <Container>
-      <SearchFilter 
-        value={value}
-        onChange={onChange}
-        placeholder={'Search Acquisitions'}
-      />
-      {loading 
-        ? <Loader />
+      {isLoading 
+        ? <Loader /> 
         : error 
           ? <Error />
-          : isEmpty(crunchbaseAcquisitions) 
+          : isEmpty(acquisitions) 
             ? <NoResults /> 
-            : map((acquisition: CrunchbaseAcquisition) => (
-                <ItemContainer key={acquisition.id}>
-                  <Acquisition acquisition={acquisition}/>
-                </ItemContainer>
-              ), crunchbaseAcquisitions)
+            : (
+              <>
+                <DataTable columns={COLUMNS}  data={acquisitions} rowKey={'id'}/>
+                <Pagination totalItems={count} page={page} onChange={(({ page }) => setPage(page))}/>
+              </>
+            )
       }
     </Container>
   )
 }
 
-export default Acquisitions;
+export default Companies;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const SearchFilter = styled.input`
-  width: 320px;
-  height: 20px;
-  font-size: 12px;
-  margin-bottom: 10px;
-`;
-
-const ItemContainer = styled.div`
-  border: 1px solid black;
-  margin: 10px 0;
+  width: 100%;
 `;
